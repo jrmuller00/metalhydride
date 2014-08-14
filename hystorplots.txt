@@ -1,0 +1,15 @@
+#
+# hystor plots
+
+mhydrideName = str 'hystor207'
+pUnits = str 'atm'
+tUnits = str 'k'
+omegaStart = float 0.05
+omegaEnd = float 0.95
+delOmega = float 0.05
+tStart = float 300.0
+tEnd = float 400.0
+delT = float 10.0
+plot = str 'single'
+showChart = str 'True'
+
