@@ -193,7 +193,38 @@ def generate_chart_data(inputDict):
         f.close()
 
     elif outputFile == 'multiple':
-        print ('not implemented yet')
+        #
+        # write out multiple files with the data
+
+
+        if plot in ('A','D'):
+            #
+            # only absorption or desorption curves
+         
+            for i in range(len(isoTVals)):
+                outputFileName = mhName + "-" + str(isoTVals[i]) + mh.get_tunits() + "-" + mh.get_punits() + '-' + plot + "-data.txt"
+                f = open(outputFileName,'w+')
+                for j in range(len(chartData[i])):
+                    omega, peq = chartData[i][j]
+                    f.write('{0:6.3f}, {1:6.3f}'.format(omega,peq) + "\n")
+                f.close()
+        elif plot == 'B':
+            #
+            # plot both absorption and desorption
+            for i in range(len(isoTVals)):
+                outputFileName = mhName + "-" + str(isoTVals[i]) + mh.get_tunits() + "-" + mh.get_punits() + '-' +"A-data.txt"
+                f = open(outputFileName,'w+')
+                for j in range(len(chartData[2*i])):
+                    omega, peq = chartData[2*i][j]
+                    f.write('{0:6.3f}, {1:6.3f}'.format(omega,peq) + "\n")
+                f.close()
+
+                outputFileName = mhName + "-" +str(isoTVals[i]) + mh.get_tunits() + "-" + mh.get_punits() + '-' +"D-data.txt"
+                f = open(outputFileName,'w+')
+                for j in range(len(chartData[2*i+1])):
+                    omega, peq = chartData[2*i+1][j]
+                    f.write('{0:6.3f}, {1:6.3f}'.format(omega,peq) + "\n")
+                f.close()
 
     #
     # check if user asked for plot to be shown

@@ -164,7 +164,7 @@ class MetalHydride(object):
         phi0 = self.paramDict['phi0']
         beta = self.paramDict['beta']
 
-        temp = self.t
+        temp = units.convertT(self.t,self.get_tunits(),'k')
         omega = self.omega
 
         if absorb == True:

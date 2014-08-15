@@ -11,10 +11,7 @@ def convertP(pressure, inUnit, outUnit):
 
     KPA_2_PA = 1000.0
     KPA_2_PSIA = 14.7/101.325
-    DEGC_2_K = 273.15
-    DEGF_2_DEGR = 459.67
-    DEGC_2_DEGF_OFFSET = 32.0
-    K_2_DEGR = 1.8
+
     
     if inUnit in ('atm','pa','kpa','psia'):
         if inUnit == 'atm':
@@ -58,6 +55,12 @@ def convertT(temperature, inUnits, outUnits):
     convert temperature units from the following values
     k, degc, degf, degr
     """
+
+    DEGC_2_K = 273.15
+    DEGF_2_DEGR = 459.67
+    DEGC_2_DEGF_OFFSET = 32.0
+    K_2_DEGR = 1.8
+
     if inUnits in ('k','degc','degf','degr'):
         if inUnits == 'k':
             if outUnits == 'degc':
