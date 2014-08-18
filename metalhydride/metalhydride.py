@@ -87,6 +87,7 @@ def generate_chart_data(inputDict):
     plot = inputDict['plot']
     outputFile = inputDict['outputFile']
     showChart = inputDict['showChart']
+    delimit = inputDict['delimit']
 
     mh = mhydride.MetalHydride()
     mh.load_data(mhName)
@@ -162,6 +163,12 @@ def generate_chart_data(inputDict):
     #
     # data generation is complete
     # check if user wants to see the plots or write out the data
+    delimiter = ' '
+    if delimit == 'tab':
+        delimiter = "\t"
+    elif delimit == 'csv':
+        delimiter = ', '
+        
 
     if outputFile == 'single':
         #
@@ -177,18 +184,18 @@ def generate_chart_data(inputDict):
             for i in range(len(isoTVals)):
                 for j in range(len(chartData[i])):
                     omega, peq = chartData[i][j]
-                    f.write('{0:6.3f}, {1:6.3f}, {2:6.3f}'.format(isoTVals[i],omega,peq) + "\n")
+                    f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
         elif plot == 'B':
             #
             # plot both absorption and desorption
             for i in range(len(isoTVals)):
                 for j in range(len(chartData[2*i])):
                     omega, peq = chartData[2*i][j]
-                    f.write('{0:6.3f}, {1:6.3f}, {2:6.3f}'.format(isoTVals[i],omega,peq) + "\n")
+                    f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
 
                 for j in range(len(chartData[2*i+1])):
                     omega, peq = chartData[2*i+1][j]
-                    f.write('{0:6.3f}, {1:6.3f}, {2:6.3f}'.format(isoTVals[i],omega,peq) + "\n")
+                    f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
 
         f.close()
 
@@ -206,7 +213,7 @@ def generate_chart_data(inputDict):
                 f = open(outputFileName,'w+')
                 for j in range(len(chartData[i])):
                     omega, peq = chartData[i][j]
-                    f.write('{0:6.3f}, {1:6.3f}'.format(omega,peq) + "\n")
+                    f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
                 f.close()
         elif plot == 'B':
             #
@@ -216,14 +223,14 @@ def generate_chart_data(inputDict):
                 f = open(outputFileName,'w+')
                 for j in range(len(chartData[2*i])):
                     omega, peq = chartData[2*i][j]
-                    f.write('{0:6.3f}, {1:6.3f}'.format(omega,peq) + "\n")
+                    f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
                 f.close()
 
                 outputFileName = mhName + "-" +str(isoTVals[i]) + mh.get_tunits() + "-" + mh.get_punits() + '-' +"D-data.txt"
                 f = open(outputFileName,'w+')
                 for j in range(len(chartData[2*i+1])):
                     omega, peq = chartData[2*i+1][j]
-                    f.write('{0:6.3f}, {1:6.3f}'.format(omega,peq) + "\n")
+                    f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
                 f.close()
 
     #
@@ -247,9 +254,170 @@ def generate_chart_data(inputDict):
     return
 
 
+def generate_mhrfc_cycle_data(inputDict):
+    """
+    generate_mhrfc_cycle_data will make a plot of the MHRFC cycle based on metal hydride data 
+    for two specified metal hydride materials, one with floating temperature and one with 
+    a fixed temperature.  The data can be written to a single file or multiple files
+
+    """
 
 
+    #
+    # get the relevant data from the dictionary
+    mhFloatName = inputDict['mhydrideFloatName']
+    mhFixedName = inputDict['mhydrideFixedName']
+    pUnits = inputDict['pUnits']
+    tUnits = inputDict['tUnits']
+    omegaStart = inputDict['omegaStart']
+    omegaEnd = inputDict['omegaEnd']
+    tHi = inputDict['tHi']
+    tLow = inputDict['tLow']
+    delOmega = inputDict['delOmega']
+    outputFile = inputDict['outputFile']
+    showChart = inputDict['showChart']
+    delimit = inputDict['delimit']
 
+    mhFloat = mhydride.MetalHydride()
+    mhFloat.load_data(mhFloatName)
+    mhFloat.set_punits(pUnits)
+    mhFloat.set_tunits(tUnits)
+
+    mhFixed = mhydride.MetalHydride()
+    mhFixed.load_data(mhFixedName)
+    mhFixed.set_punits(pUnits)
+    mhFixed.set_tunits(tUnits)
+   
+    chartData = []
+
+    #
+    # There are 4 different relevant series to plot
+    #
+    #  [0] mhFloat Thi desorption
+    #  [1] mhFLoat Tlow absorption
+    #  [2] mhFixed Tlow absorption
+    #  [3] mhFixed Tlow desorption
+    # 
+    # They will be stored in the chart data list 
+    # at the stated indicies
+
+
+    count = 0
+
+    #
+    # create a new list for the chart data
+    
+    chartData.append([])
+    mhFloat.set_t(tHi)
+    omega = omegaStart
+    while omega <= omegaEnd:
+        mhFloat.set_omega(omega)
+        peq = mhFloat.calc_peq(False)
+        chartData[count].append((omega,peq))
+        omega = omega + delOmega
+
+    count = count + 1
+    chartData.append([])
+    mhFloat.set_t(tLow)
+    omega = omegaStart
+    while omega <= omegaEnd:
+        mhFloat.set_omega(omega)
+        peq = mhFloat.calc_peq()
+        chartData[count].append((omega,peq))
+        omega = omega + delOmega
+
+    count = count + 1
+    chartData.append([])
+    mhFixed.set_t(tLow)
+    omega = omegaStart
+    while omega <= omegaEnd:
+        mhFixed.set_omega(omega)
+        peq = mhFixed.calc_peq()
+        chartData[count].append((omega,peq))
+        omega = omega + delOmega
+
+    count = count + 1
+    chartData.append([])
+    omega = omegaStart
+    while omega <= omegaEnd:
+        mhFixed.set_omega(omega)
+        peq = mhFixed.calc_peq(False)
+        chartData[count].append((omega,peq))
+        omega = omega + delOmega
+
+
+    #
+    # data generation is complete
+    # check if user wants to see the plots or write out the data
+    delimiter = ' '
+    if delimit == 'tab':
+        delimiter = "\t"
+    elif delimit == 'csv':
+        delimiter = ', '
+        
+
+    if outputFile == 'single':
+        #
+        # write out one single file with the data
+
+        outputFileName = mhFloatName + "-" + mhFixedName + "-mhrfc-data.txt"
+        f = open(outputFileName,'w+')
+
+        for count in range(4):
+            if count == 0: 
+                temp = tHi
+            else:
+                temp = tLow
+            for j in range(len(chartData[count])):
+                omega, peq = chartData[count][j]
+                f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(temp,delimiter,omega,delimiter,peq) + "\n")
+
+        f.close()
+
+    elif outputFile == 'multiple':
+        #
+        # write out multiple files with the data
+
+        for count in range(4):
+            if count == 0: 
+                temp = tHi
+                outputFileName = mhFloatName + "-" + str(tHi) + mhFloat.get_tunits() + "-D-mhrfc-data.txt"
+            elif count == 1:
+                temp = tLow
+                outputFileName = mhFloatName + "-" + str(tLow) + mhFloat.get_tunits() + "-A-mhrfc-data.txt"
+            elif count == 2:
+                temp = tLow
+                outputFileName = mhFixedName + "-" + str(tLow) + mhFixed.get_tunits() + "-A-mhrfc-data.txt"            
+            else:
+                temp = tLow
+                outputFileName = mhFixedName + "-" + str(tLow) + mhFixed.get_tunits() + "-D-mhrfc-data.txt"       
+            f = open(outputFileName,'w+')
+
+            for j in range(len(chartData[count])):
+                omega, peq = chartData[count][j]
+                f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
+
+            f.close()
+
+    #
+    # check if user asked for plot to be shown
+
+    if showChart == 'True':
+        #
+        # loop over data pairs and create xvals and yvals vectors for matplot
+
+        for i in range(len(chartData)):
+            xvals = []
+            yvals= []
+            for j in range(len(chartData[i])):
+                omega, peq = chartData[i][j]
+                xvals.append(omega)
+                yvals.append(peq)
+            line = plt.plot(xvals,yvals)
+
+        plt.show()
+
+    return
 
 
 def main():
@@ -267,10 +435,11 @@ def main():
     inputFile = ""
     chartData = False
     simulation = False
+    MHRFC_Cycle = False
     inputDict = {}
     
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "chsf:",["help","filename="])
+        opts, args = getopt.getopt(sys.argv[1:], "chsrf:",["help","filename="])
     except getopt.error as msg:
         print (msg)
         print ("for help use --help")
@@ -287,23 +456,19 @@ def main():
             simulation = True
         if o == "-c":
             chartData = True
-
-    hystor = mhydride.MetalHydride()
-
-    hystor.load_data('hystor207')
-
-    hystor.set_t(300)
-    hystor.set_omega(0.5)
-
-    peqa = hystor.calc_peq()
-    peqd = hystor.calc_peq(False)
-
-    print (peqa,peqd)
+        if o == "-r":
+            MHRFC_Cycle = True
 
     if chartData == True:
         #
         # generate chart files
         generate_chart_data(inputDict)
+
+    elif MHRFC_Cycle == True:
+        #
+        # generate MHRFC cycle charts and files
+        generate_mhrfc_cycle_data(inputDict)
+
 
     return
 
