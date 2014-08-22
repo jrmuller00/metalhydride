@@ -2,16 +2,19 @@
 # hystor plots
 
 mhydrideFloatName = str hystor207
-mhydrideFixedName = str hystor205
+mhydrideFixedName = str MmNi3Co2
 pUnits = str psia
 tUnits = str degc
 omegaStart = float 0.05
-omegaEnd = float 0.90
+omegaEnd = float 0.85
 delOmega = float 0.025
 tHi = float 100.0
 tLow = float 25.0
 outputFile = str multiple
 showChart = str True
 delimit = str tab
+logPlot = str False
+
+
 
 

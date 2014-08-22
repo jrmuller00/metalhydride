@@ -184,18 +184,18 @@ def generate_chart_data(inputDict):
             for i in range(len(isoTVals)):
                 for j in range(len(chartData[i])):
                     omega, peq = chartData[i][j]
-                    f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
+                    f.write(('{0:6.3e}{1}{2:6.3e}{3}{4:6.3e}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
         elif plot == 'B':
             #
             # plot both absorption and desorption
             for i in range(len(isoTVals)):
                 for j in range(len(chartData[2*i])):
                     omega, peq = chartData[2*i][j]
-                    f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
+                    f.write(('{0:6.3e}{1}{2:6.3e}{3}{4:6.3e}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
 
                 for j in range(len(chartData[2*i+1])):
                     omega, peq = chartData[2*i+1][j]
-                    f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
+                    f.write(('{0:6.3e}{1}{2:6.3e}{3}{4:6.3e}').format(isoTVals[i],delimiter,omega,delimiter,peq) + "\n")
 
         f.close()
 
@@ -223,14 +223,14 @@ def generate_chart_data(inputDict):
                 f = open(outputFileName,'w+')
                 for j in range(len(chartData[2*i])):
                     omega, peq = chartData[2*i][j]
-                    f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
+                    f.write(('{0:6.3e}{1}{2:6.3e}').format(omega,delimiter,peq) + "\n")
                 f.close()
 
                 outputFileName = mhName + "-" +str(isoTVals[i]) + mh.get_tunits() + "-" + mh.get_punits() + '-' +"D-data.txt"
                 f = open(outputFileName,'w+')
                 for j in range(len(chartData[2*i+1])):
                     omega, peq = chartData[2*i+1][j]
-                    f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
+                    f.write(('{0:6.3e}{1}{2:6.3e}').format(omega,delimiter,peq) + "\n")
                 f.close()
 
     #
@@ -277,6 +277,13 @@ def generate_mhrfc_cycle_data(inputDict):
     outputFile = inputDict['outputFile']
     showChart = inputDict['showChart']
     delimit = inputDict['delimit']
+    logPlot = 'False'
+
+    try:
+        logPlot = inputDict['logPlot']
+    except:
+        pass
+
 
     mhFloat = mhydride.MetalHydride()
     mhFloat.load_data(mhFloatName)
@@ -370,7 +377,7 @@ def generate_mhrfc_cycle_data(inputDict):
                 temp = tLow
             for j in range(len(chartData[count])):
                 omega, peq = chartData[count][j]
-                f.write(('{0:6.3f}{1}{2:6.3f}{3}{4:6.3f}').format(temp,delimiter,omega,delimiter,peq) + "\n")
+                f.write(('{0:6.3e}{1}{2:6.3e}{3}{4:6.3e}').format(temp,delimiter,omega,delimiter,peq) + "\n")
 
         f.close()
 
@@ -395,7 +402,7 @@ def generate_mhrfc_cycle_data(inputDict):
 
             for j in range(len(chartData[count])):
                 omega, peq = chartData[count][j]
-                f.write(('{0:6.3f}{1}{2:6.3f}').format(omega,delimiter,peq) + "\n")
+                f.write(('{0:6.3e}{1}{2:6.3e}').format(omega,delimiter,peq) + "\n")
 
             f.close()
 
@@ -414,6 +421,12 @@ def generate_mhrfc_cycle_data(inputDict):
                 xvals.append(omega)
                 yvals.append(peq)
             line = plt.plot(xvals,yvals)
+
+        plt.xlabel('omega [-]')
+        plt.ylabel('Pressure [' + mhFixed.get_punits() + ']')
+
+        if logPlot == 'True':
+            plt.yscale('log')
 
         plt.show()
 
