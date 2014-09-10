@@ -1,7 +1,11 @@
 #
 # hystor plots
 
+<<<<<<< HEAD
 mhydrideFloatName = str LaNi46Mn4
+=======
+mhydrideFloatName = str hystor207
+>>>>>>> origin/master
 mhydrideFixedName = str MmNi3Co2
 pUnits = str psia
 tUnits = str degc
