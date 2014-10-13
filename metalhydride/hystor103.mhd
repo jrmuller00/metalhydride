@@ -1,0 +1,20 @@
+#
+# Hystor 103
+
+MHName = str HYSTOR103
+A = float 4955.5
+B = float 14.31      
+phi = float 0.36
+phi0 = float 0.015
+beta = float 0.02
+rho = float 2500.0
+cpAlpha = float 339.67
+cpBeta = float 492.10
+kcond = float 1.3
+h2cap = float 1.0
+voidf = float 0.25
+MHMW = float 422.89
+delH = float -34e3
+Eact = float 33.9e3
+dstar = float 175.0
+
